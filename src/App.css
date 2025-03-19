@@ -1,0 +1,89 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.card {
+  padding: 2em;
+}
+
+.container{
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  grid-template-rows: repeat(4, auto);
+  gap: 10px;
+  border: 2px solid white;
+}
+
+.input-file{
+  grid-area: 1/1/2/2;
+}
+
+.image-box{
+  grid-area: 2/1/5/2;
+}
+
+.description{
+  grid-area: 1/2/2/3;
+}
+.result{
+  grid-area: 2/2/3/4;
+}
+.submit-btn{
+  grid-area: 3/2/4/3;
+}
+
+.image{
+  width: 100%;
+}
+
+/*
+
+.input-file{
+  grid-column: span 2 / span 2;
+  align-content: flex-end;
+  border: 2px solid white;
+}
+
+.image-box{
+  grid-column: span 3 / span 3;
+  grid-row: span 4 / span 4;
+  grid-column-start: 1;
+  grid-row-start: 2;
+  border: 2px solid white;
+}
+
+.image{
+  width: 100%;
+}
+
+.description{
+  grid-column: span 2 / span 2;
+  grid-column-start: 4;
+  grid-row-start: 1;
+  align-content: flex-end;
+  text-align: center;
+  font-size: 0.9em;
+  border: 2px solid white;
+}
+
+.result{
+  grid-column: span 2 / span 2;
+  grid-row: span 2 / span 2;
+  grid-column-start: 4;
+  grid-row-start: 2;
+  border: 2px solid white;
+}
+
+.submit-btn{
+  grid-column: span 2 / span 2;
+  grid-column-start: 4;
+  grid-row-start: 3;
+  align-content: flex-start;
+  text-align: center;
+  border: 2px solid white;
+}
+
+*/
