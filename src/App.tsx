@@ -1,9 +1,23 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { loadingimg } from './assets/images'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [imgSrc, setImgSrc] = React.useState<string>("");
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const file_reader = new FileReader();
+      file_reader.onload = () => {
+        setImgSrc(file_reader.result as string);
+      };
+      file_reader.onerror = (error) => {
+        console.log(error);
+      }
+      file_reader.readAsDataURL(file);
+    }
+  }
 
   return (
     <>
@@ -11,10 +25,15 @@ function App() {
     <div className="card">
       <div className="container">
         <div className='input-file'>
-          <input type="file" name="file" id="file" />
+          <input 
+            type="file" 
+            name="file" 
+            id="file" 
+            accept="image/*"
+            onChange={handleImageUpload}/>
         </div>
         <div className='image-box'>
-          <img src={loadingimg} alt="" className='image'/>
+          <img src={imgSrc || loadingimg} alt="" className='image'/>
         </div>
         <div className='description'>
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In erat nulla, 

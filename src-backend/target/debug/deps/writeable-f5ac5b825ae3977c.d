@@ -1,0 +1,11 @@
+D:\projects\New folder\image_class_detect\src-backend\target\debug\deps\libwriteable-f5ac5b825ae3977c.rmeta: C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\lib.rs C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\cmp.rs C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\impls.rs C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\ops.rs C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\parts_write_adapter.rs C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\testing.rs C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\try_writeable.rs
+
+D:\projects\New folder\image_class_detect\src-backend\target\debug\deps\writeable-f5ac5b825ae3977c.d: C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\lib.rs C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\cmp.rs C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\impls.rs C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\ops.rs C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\parts_write_adapter.rs C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\testing.rs C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\try_writeable.rs
+
+C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\lib.rs:
+C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\cmp.rs:
+C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\impls.rs:
+C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\ops.rs:
+C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\parts_write_adapter.rs:
+C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\testing.rs:
+C:\Users\james\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\writeable-0.5.5\src\try_writeable.rs:
