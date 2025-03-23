@@ -1,25 +1,34 @@
 use base64::{engine::general_purpose, Engine};
+use actix_multipart::Multipart;
+use actix_web::{post, web, HttpResponse, Responder, Error};
+use futures_util::stream::StreamExt as _;
+use std::io::Write;
 use crate::{model::{constants::{CONF_THRESHOLD, IOU_THRESHOLD}, model_functions::functions::model_run}};
 
 /* <--- THIS IS FOR INVOKE CALL FOR FRONTEND ---> */
 
 
-pub fn ocr_image(img: &str) -> Vec<String> {
-    // initialize weights
+// Handler function
+#[post("/detect_image")]
+pub async fn detect_image(img: web::Json<String>) -> Result<HttpResponse, Error> {
+    // Initialize weights
     const WEIGHTS_SAFETENSORS: &[u8] = include_bytes!("pretrained/cheque.safetensors");
+
     // Convert image into base64
     let split_image = img.split(',').last().unwrap_or("");
-    let image_base64 = general_purpose::STANDARD.decode(split_image).expect("Failed to decode image");
-    // Initialize model and run
+    let image_base64 = general_purpose::STANDARD
+        .decode(split_image)
+        .map_err(|_| actix_web::error::ErrorBadRequest("Invalid base64 image"))?;
+
+    // Initialize model
     let model = model_run(WEIGHTS_SAFETENSORS);
 
+    // Run OCR (assuming this returns `Result<String, candle_core::Error>`)
+    let bbox = model.run_img_detect(image_base64, CONF_THRESHOLD, IOU_THRESHOLD)
+        .map_err(|e| actix_web::error::ErrorInternalServerError(format!("OCR failed: {}", e.to_string())))?;
 
-    let bbox = match model.run_img_ocr(image_base64, CONF_THRESHOLD, IOU_THRESHOLD) {
-        Ok(label) => label, // Directly return the label
-        Err(err) => format!("{}", err), // Return the error as a string
-    };
-
-
+    // Return response as JSON
+    Ok(HttpResponse::Ok().json(bbox))
 }
 
 

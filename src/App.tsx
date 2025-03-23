@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
+import axios from "axios";
 import { loadingimg } from './assets/images'
 import './App.css'
 
 function App() {
   const [imgSrc, setImgSrc] = React.useState<string>("");
+  const [processedImgSrc, setProcessedImgSrc] = useState<string | null>(null);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -11,13 +13,36 @@ function App() {
       const file_reader = new FileReader();
       file_reader.onload = () => {
         setImgSrc(file_reader.result as string);
+        sendImageToBackend(file);
       };
       file_reader.onerror = (error) => {
         console.log(error);
       }
       file_reader.readAsDataURL(file);
+
+
     }
   }
+
+  const sendImageToBackend = async (file: File) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/detect_image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("OCR Result:", response.data);
+      setImgSrc(`data:image/png;base64,${response.data}`); // Display processed image
+    } catch (error) {
+      console.error("Error sending image:", error);
+    }
+  };
+
+
 
   return (
     <>

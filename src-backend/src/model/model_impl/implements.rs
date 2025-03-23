@@ -5,14 +5,14 @@ use crate::model::model_structs::structs::{
     Bottleneck, C2f, ConvBlock, DarkNet, DetectionHead, DetectionHeadOut, Dfl, Multiples, Sppf, Upsample, YoloV8, YoloV8Neck,
     Model, ModelData
 };
-use crate::model::model_functions::functions::{ dist2bbox, make_anchors, report_classified, report_ocr };
+use crate::model::model_functions::functions::{ dist2bbox, make_anchors, report_classified, report_detect };
 use crate::model::classes::NAMES;
 
 impl Model {
 
     /* <--- ADD FUNCTIONS BASED ON YOUR NEEDS START HERE ---> */
 
-    pub fn run_img_ocr(
+    pub fn run_img_detect(
         &self,
         image_data: Vec<u8>,
         conf_threshold: f32,
@@ -61,7 +61,7 @@ impl Model {
         let predictions = self.model.forward(&image_t)?.squeeze(0)?;
 
         // Extract bounding boxes from the model's predictions
-        let bboxes: = report_ocr(
+        let bboxes: String = report_detect(
             &predictions,
             original_image,
             width,

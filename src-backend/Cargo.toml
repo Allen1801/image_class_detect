@@ -17,3 +17,5 @@ chrono = "0.4.39"
 imageproc = "0.25.0"   # For drawing bounding boxes
 rusttype = "0.9.3"
 ab_glyph = "0.2"
+actix-multipart = "0.6"
+futures-util = "0.3"

@@ -16,15 +16,19 @@ use imageproc::drawing::{draw_hollow_rect_mut, draw_text_mut};
 use rusttype::{Font, Scale}; // For adding text
 use ab_glyph::{FontRef, PxScale};
 use imageproc::rect::Rect;
+use base64::{engine::general_purpose, Engine};
+use image::codecs::png::PngEncoder;
+use image::ImageEncoder;
+use std::io::Cursor;
 
-pub fn report_ocr(
+pub fn report_detect(
     pred: &Tensor,
     img: DynamicImage,
     w: usize,
     h: usize,
     conf_threshold: f32,
     iou_threshold: f32,
-) -> Result<DynamicImage> {
+) -> Result<String> {
     let (pred_size, npreds) = pred.dims2()?;
     let nclasses = pred_size - 4;
     let conf_threshold = conf_threshold.clamp(0.0, 1.0);
@@ -90,7 +94,13 @@ pub fn report_ocr(
         }
     }
 
-    Ok(DynamicImage::ImageRgba8(img))
+        // Convert image to PNG and encode as Base64
+        let mut buffer = Cursor::new(Vec::new());
+        let encoder = PngEncoder::new(&mut buffer);
+        encoder.write_image(&img, img.width(), img.height(), image::ExtendedColorType::Rgba8).unwrap();
+    
+        let base64_string = general_purpose::STANDARD.encode(&buffer.into_inner());
+        Ok(base64_string)
 }
 
 
