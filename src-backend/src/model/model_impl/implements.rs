@@ -1,5 +1,6 @@
 use candle_core::{ DType, Device, IndexOp, Result, Tensor };
 use candle_nn::{ Module, VarBuilder, conv2d_no_bias, batch_norm, Conv2dConfig, Conv2d, conv2d };
+use serde_json::Value;
 use std::io::Cursor;
 use crate::model::model_structs::structs::{
     Bottleneck, C2f, ConvBlock, DarkNet, DetectionHead, DetectionHeadOut, Dfl, Multiples, Sppf, Upsample, YoloV8, YoloV8Neck,
@@ -17,7 +18,7 @@ impl Model {
         image_data: Vec<u8>,
         conf_threshold: f32,
         iou_threshold: f32,
-    ) -> Result<String> {
+    ) -> Result<Value> {
 
         // Convert the image data into an in-memory image format
         let image_data = Cursor::new(image_data);
@@ -61,7 +62,7 @@ impl Model {
         let predictions = self.model.forward(&image_t)?.squeeze(0)?;
 
         // Extract bounding boxes from the model's predictions
-        let bboxes: String = report_detect(
+        let bboxes: Value = report_detect(
             &predictions,
             original_image,
             width,
@@ -69,7 +70,7 @@ impl Model {
             conf_threshold,
             iou_threshold,
         ).expect("Failed bboxes report detect");
-
+        // Use the report_detect function to process the predictions and get detected classes
         Ok(bboxes)
     }
     

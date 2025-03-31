@@ -5,12 +5,16 @@ import './App.css'
 
 function App() {
   const [imgSrc, setImgSrc] = React.useState<string>("");
-  const [processedImgSrc, setProcessedImgSrc] = useState<string | null>(null);
+  const [imgLabel, setImgLabel] = React.useState<string>("");
+  const [imgSize, setImgSize] = React.useState<string>("");
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const file_reader = new FileReader();
+      const fileSizeInKB = (file.size / 1024).toFixed(2); // Size in KB
+      const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2); // Size in MB
+      setImgSize(`${fileSizeInKB} KB (${fileSizeInMB} MB)`); // Set size in both KB and MB
       file_reader.onload = () => {
         setImgSrc(file_reader.result as string);
         sendImageToBackend(file);
@@ -24,25 +28,39 @@ function App() {
     }
   }
 
-  const sendImageToBackend = async (file: File) => {
-    const formData = new FormData();
-    formData.append("image", file);
+  async function sendImageToBackend(file: File) {
+    const fileReader = new FileReader();
+    
+    fileReader.onload = async () => {
+        const base64Image = fileReader.result as string;
+        try {
+            const payload = { image: base64Image };  // Wrap in an object
+            console.log("Sending data:", payload);  // Debugging
 
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/detect_image", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+            const response = await axios.post("http://localhost:8000/detect_image", 
+                payload,  // Send as an object, not raw string
+                {
+                    headers: { "Content-Type": "application/json" }
+                }
+            );
+            console.log("Response image:", response.data);
+            setImgSrc(`data:image/png;base64,${response.data.image}`);  // Assuming the response contains the image
+            setImgLabel(
+              Array.isArray(response.data.labels)
+                  ? [...new Set(response.data.labels)].join(", ") // Remove duplicates and join
+                  : response.data.labels
+          );
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
 
-      console.log("OCR Result:", response.data);
-      setImgSrc(`data:image/png;base64,${response.data}`); // Display processed image
-    } catch (error) {
-      console.error("Error sending image:", error);
-    }
-  };
+    fileReader.onerror = (error) => {
+        console.log("File read error:", error);
+    };
 
-
+    fileReader.readAsDataURL(file);  // Convert to base64
+}
 
   return (
     <>
@@ -66,8 +84,8 @@ function App() {
         </div>
         <div className='result'>
           <h2>Image Result</h2>
-          <p>Image Size: </p>
-          <p>object Detected: </p>
+          <p>Image Size: {imgSize}</p>
+          <p>Object Detected: {imgLabel}</p>
         </div>
 
           <button className='submit-btn'>Submit</button>

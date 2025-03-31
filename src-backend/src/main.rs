@@ -9,16 +9,16 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .wrap(
-            Cors::default()
+            Cors::permissive()
                 .allow_any_origin() // Allows all origins. For production, specify allowed origins.
-                .allowed_methods(vec!["GET", "POST"])
-                .allowed_headers(vec![http::header::CONTENT_TYPE])
+                .allow_any_method()
+                .allow_any_header()
                 .max_age(3600),
             )
             .wrap(middleware::Logger::default())
-            .service(web::scope("/detect_image").service(detect_image))
+            .service(detect_image)
     })
-    .bind("127.0.0.1:8000")?
+    .bind("0.0.0.0:8000")?
     .run()
     .await
 }

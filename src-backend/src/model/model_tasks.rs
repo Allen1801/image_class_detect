@@ -4,18 +4,24 @@ use actix_web::{post, web, HttpResponse, Responder, Error};
 use futures_util::stream::StreamExt as _;
 use std::io::Write;
 use crate::{model::{constants::{CONF_THRESHOLD, IOU_THRESHOLD}, model_functions::functions::model_run}};
+use crate::model::model_structs::structs::ImageRequest;
 
 /* <--- THIS IS FOR INVOKE CALL FOR FRONTEND ---> */
 
 
+
 // Handler function
 #[post("/detect_image")]
-pub async fn detect_image(img: web::Json<String>) -> Result<HttpResponse, Error> {
+pub async fn detect_image(img: web::Json<ImageRequest>) -> Result<HttpResponse, Error> {
     // Initialize weights
-    const WEIGHTS_SAFETENSORS: &[u8] = include_bytes!("pretrained/cheque.safetensors");
+    println!("Detecting image...");
+
+    let img_base64 = img.image.clone();
+
+    const WEIGHTS_SAFETENSORS: &[u8] = include_bytes!("pretrained/yolov8.safetensors");
 
     // Convert image into base64
-    let split_image = img.split(',').last().unwrap_or("");
+    let split_image = &img_base64.split(',').last().unwrap_or("");
     let image_base64 = general_purpose::STANDARD
         .decode(split_image)
         .map_err(|_| actix_web::error::ErrorBadRequest("Invalid base64 image"))?;
@@ -27,6 +33,8 @@ pub async fn detect_image(img: web::Json<String>) -> Result<HttpResponse, Error>
     let bbox = model.run_img_detect(image_base64, CONF_THRESHOLD, IOU_THRESHOLD)
         .map_err(|e| actix_web::error::ErrorInternalServerError(format!("OCR failed: {}", e.to_string())))?;
 
+    print!("{}", bbox);
+    println!("Detection completed.");
     // Return response as JSON
     Ok(HttpResponse::Ok().json(bbox))
 }

@@ -28,13 +28,14 @@ pub fn report_detect(
     h: usize,
     conf_threshold: f32,
     iou_threshold: f32,
-) -> Result<String> {
+) -> Result<serde_json::Value> {
     let (pred_size, npreds) = pred.dims2()?;
     let nclasses = pred_size - 4;
     let conf_threshold = conf_threshold.clamp(0.0, 1.0);
     let iou_threshold = iou_threshold.clamp(0.0, 1.0);
 
     let mut bboxes: Vec<Vec<Bbox>> = (0..nclasses).map(|_| vec![]).collect();
+    let mut labels = Vec::new();
 
     for index in 0..npreds {
         let pred = Vec::<f32>::try_from(pred.i((.., index))?)?;
@@ -55,7 +56,8 @@ pub fn report_detect(
                     confidence,
                     keypoints: vec![],
                 };
-                bboxes[class_index].push(bbox)
+                bboxes[class_index].push(bbox);
+                labels.push(NAMES[class_index].to_string());
             }
         }
     }
@@ -75,9 +77,10 @@ pub fn report_detect(
     let scale = PxScale::from(20.0); // Fix: Convert to PxScale
 
     for (class_index, bboxes_for_class) in bboxes.iter_mut().enumerate() {
-        let label = CHEQUE_NAMES[class_index].to_string();
+        let label = NAMES[class_index].to_string();
         let color = Rgba([255, 0, 0, 255]); // Red bounding box
-
+        println!("Class {}: {}", class_index, label);
+        println!("Bboxes: {:?}", bboxes_for_class);
         for b in bboxes_for_class.iter_mut() {
             b.xmin = (b.xmin * w_ratio).clamp(0., initial_w - 1.);
             b.ymin = (b.ymin * h_ratio).clamp(0., initial_h - 1.);
@@ -94,13 +97,18 @@ pub fn report_detect(
         }
     }
 
-        // Convert image to PNG and encode as Base64
-        let mut buffer = Cursor::new(Vec::new());
-        let encoder = PngEncoder::new(&mut buffer);
-        encoder.write_image(&img, img.width(), img.height(), image::ExtendedColorType::Rgba8).unwrap();
-    
-        let base64_string = general_purpose::STANDARD.encode(&buffer.into_inner());
-        Ok(base64_string)
+    // Convert image to PNG and encode as Base64
+    let mut buffer = Cursor::new(Vec::new());
+    let encoder = PngEncoder::new(&mut buffer);
+    encoder
+        .write_image(&img, img.width(), img.height(), image::ExtendedColorType::Rgba8)
+        .expect("Failed to encode image as PNG");
+
+    let base64_string = general_purpose::STANDARD.encode(&buffer.into_inner());
+    Ok(json!({
+        "image": base64_string,
+        "labels": labels
+    }))
 }
 
 

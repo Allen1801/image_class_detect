@@ -5,6 +5,10 @@ use candle_nn::{
 };
 
 /* <--- MODEL STRUCTURE AND METHODS FOR LOADING AND RUNNING INFERENCE ON THE STATIC IMAGE ---> */
+#[derive(Serialize, Deserialize)]
+pub struct ImageRequest {
+    pub image: String, // Matches { "image": "data:image/png;base64,..." }
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct ModelData {
