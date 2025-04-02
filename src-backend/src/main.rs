@@ -18,7 +18,6 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .service(detect_image)
     })
-    .bind("https://image-class-detect.onrender.com")?
     .run()
     .await
 }
