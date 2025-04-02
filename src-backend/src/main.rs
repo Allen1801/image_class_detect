@@ -10,15 +10,16 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(
             Cors::default()
-                .allowed_origin("https://imageclassydetect.vercel.app")// Allows all origins. For production, specify allowed origins.
-                .allow_any_method()
-                .allow_any_header()
-                .max_age(3600),
+            .allowed_origin("https://imageclassydetect.vercel.app") // Allow your frontend
+            .allowed_methods(vec!["GET", "POST"])
+            .allowed_headers(vec!["Content-Type"])
+            .supports_credentials()
+            .max_age(3600),
             )
             .wrap(middleware::Logger::default())
             .service(detect_image)
     })
-    .bind("https://image-class-detect.onrender.com")?
+    .bind("0.0.0.0:8080")?
     .run()
     .await
 }
