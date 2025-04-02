@@ -13,8 +13,7 @@ async fn main() -> std::io::Result<()> {
             .allowed_origin("https://imageclassydetect.vercel.app") // Allow your frontend
             .allowed_methods(vec!["GET", "POST"])
             .allowed_headers(vec!["Content-Type"])
-            .supports_credentials()
-            .max_age(3600),
+            .supports_credentials(),
             )
             .wrap(middleware::Logger::default())
             .service(detect_image)
