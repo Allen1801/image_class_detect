@@ -37,7 +37,7 @@ function App() {
             const payload = { image: base64Image };  // Wrap in an object
             console.log("Sending data:", payload);  // Debugging
 
-            const response = await axios.post("http://localhost:8000/detect_image", 
+            const response = await axios.post("https://image-class-detect.onrender.com/detect_image", 
                 payload,  // Send as an object, not raw string
                 {
                     headers: { "Content-Type": "application/json" }
