@@ -88,8 +88,6 @@ function App() {
           <p>Object Detected: {imgLabel}</p>
         </div>
 
-          <button className='submit-btn'>Submit</button>
-
       </div>
     </div>
     </>
