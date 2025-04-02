@@ -6,8 +6,8 @@ use crate::model::model_structs::structs::{
     Bottleneck, C2f, ConvBlock, DarkNet, DetectionHead, DetectionHeadOut, Dfl, Multiples, Sppf, Upsample, YoloV8, YoloV8Neck,
     Model, ModelData
 };
-use crate::model::model_functions::functions::{ dist2bbox, make_anchors, report_classified, report_detect };
-use crate::model::classes::NAMES;
+use crate::model::model_functions::functions::{ dist2bbox, make_anchors, report_detect };
+use crate::model::classes::YOLO_CLASSES;
 
 impl Model {
 
@@ -74,57 +74,57 @@ impl Model {
         Ok(bboxes)
     }
     
-    pub fn run_img_classification(
-        &self,
-        image_data: Vec<u8>,
-        conf_threshold: f32
-    ) -> Result<String> {
-        // Convert the image data into an in-memory image format
-        let image_data = Cursor::new(image_data);
-        let original_image = image::ImageReader::new(image_data)
-            .with_guessed_format()?
-            .decode()
-            .map_err(candle_core::Error::wrap)?;
+    // pub fn run_img_classification(
+    //     &self,
+    //     image_data: Vec<u8>,
+    //     conf_threshold: f32
+    // ) -> Result<String> {
+    //     // Convert the image data into an in-memory image format
+    //     let image_data = Cursor::new(image_data);
+    //     let original_image = image::ImageReader::new(image_data)
+    //         .with_guessed_format()?
+    //         .decode()
+    //         .map_err(candle_core::Error::wrap)?;
 
-        // Resize the image while maintaining the aspect ratio
-        let (width, height) = {
-            let w = original_image.width() as usize;
-            let h = original_image.height() as usize;
-            if w < h {
-                let w = w * 640 / h;
-                (w / 32 * 32, 640) // Ensure the width is divisible by 32
-            } else {
-                let h = h * 640 / w;
-                (640, h / 32 * 32) // Ensure the height is divisible by 32
-            }
-        };
+    //     // Resize the image while maintaining the aspect ratio
+    //     let (width, height) = {
+    //         let w = original_image.width() as usize;
+    //         let h = original_image.height() as usize;
+    //         if w < h {
+    //             let w = w * 640 / h;
+    //             (w / 32 * 32, 640) // Ensure the width is divisible by 32
+    //         } else {
+    //             let h = h * 640 / w;
+    //             (640, h / 32 * 32) // Ensure the height is divisible by 32
+    //         }
+    //     };
 
-        // Resize the image and convert it to a tensor
-        let image_t = {
-            let img = original_image.resize_exact(
-                width as u32,
-                height as u32,
-                image::imageops::FilterType::CatmullRom,
-            );
-            let data = img.to_rgb8().into_raw();
-            Tensor::from_vec(
-                data,
-                (img.height() as usize, img.width() as usize, 3),
-                &Device::Cpu,
-            )?
-            .permute((2, 0, 1))? // Convert to tensor with channel-first format (C, H, W)
-        };
+    //     // Resize the image and convert it to a tensor
+    //     let image_t = {
+    //         let img = original_image.resize_exact(
+    //             width as u32,
+    //             height as u32,
+    //             image::imageops::FilterType::CatmullRom,
+    //         );
+    //         let data = img.to_rgb8().into_raw();
+    //         Tensor::from_vec(
+    //             data,
+    //             (img.height() as usize, img.width() as usize, 3),
+    //             &Device::Cpu,
+    //         )?
+    //         .permute((2, 0, 1))? // Convert to tensor with channel-first format (C, H, W)
+    //     };
 
-        let image_t = (image_t.unsqueeze(0)?.to_dtype(DType::F32)? * (1. / 255.))?; // Normalize to 0-1 range
+    //     let image_t = (image_t.unsqueeze(0)?.to_dtype(DType::F32)? * (1. / 255.))?; // Normalize to 0-1 range
 
-        // Run the model on the input image
-        let predictions = self.model.forward(&image_t)?.squeeze(0)?;
+    //     // Run the model on the input image
+    //     let predictions = self.model.forward(&image_t)?.squeeze(0)?;
 
-        // Use the report_detect function to process the predictions and get detected classes
-        let detected_classes = report_classified(&predictions, conf_threshold)?;
+    //     // Use the report_detect function to process the predictions and get detected classes
+    //     let detected_classes = report_classified(&predictions, conf_threshold)?;
 
-        Ok(detected_classes)
-    }
+    //     Ok(detected_classes)
+    // }
     
     /* <--- ADD FUNCTIONS BASED ON YOUR NEEDS ENDS HERE ---> */
 
@@ -142,7 +142,7 @@ impl Model {
 
         let dev = &Device::Cpu;
         let vb = VarBuilder::from_buffered_safetensors(md.weights, DType::F32, dev)?;
-        let model = YoloV8::load(vb, multiples, NAMES.len())?;
+        let model = YoloV8::load(vb, multiples, YOLO_CLASSES.len())?;
         Ok(Self { model })
     }
 }

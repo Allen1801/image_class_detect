@@ -1,9 +1,6 @@
 use base64::{engine::general_purpose, Engine};
-use actix_multipart::Multipart;
-use actix_web::{post, web, HttpResponse, Responder, Error};
-use futures_util::stream::StreamExt as _;
-use std::io::Write;
-use crate::{model::{constants::{CONF_THRESHOLD, IOU_THRESHOLD}, model_functions::functions::model_run}};
+use actix_web::{post, web, HttpResponse, Error};
+use crate::model::{constants::{CONF_THRESHOLD, IOU_THRESHOLD}, model_functions::functions::model_run};
 use crate::model::model_structs::structs::ImageRequest;
 
 /* <--- THIS IS FOR INVOKE CALL FOR FRONTEND ---> */
@@ -18,7 +15,7 @@ pub async fn detect_image(img: web::Json<ImageRequest>) -> Result<HttpResponse, 
 
     let img_base64 = img.image.clone();
 
-    const WEIGHTS_SAFETENSORS: &[u8] = include_bytes!("pretrained/yolov8.safetensors");
+    const WEIGHTS_SAFETENSORS: &[u8] = include_bytes!("pretrained/yolov8n.safetensors");
 
     // Convert image into base64
     let split_image = &img_base64.split(',').last().unwrap_or("");

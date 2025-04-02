@@ -1,4 +1,4 @@
-use crate::model::classes::{CHEQUE_NAMES, NAMES};
+use crate::model::classes::YOLO_CLASSES;
 use crate::model::model_structs::structs::{ Model, ModelData, Bbox };
 use candle_core::{ IndexOp, Result, Tensor, DType, D };
 use image::DynamicImage;
@@ -11,9 +11,9 @@ use serde_json::json;
         don't make modification code after the tail of this code block
 */
 
-use image::{Rgba, RgbaImage};
+use image::Rgba;
 use imageproc::drawing::{draw_hollow_rect_mut, draw_text_mut};
-use rusttype::{Font, Scale}; // For adding text
+
 use ab_glyph::{FontRef, PxScale};
 use imageproc::rect::Rect;
 use base64::{engine::general_purpose, Engine};
@@ -57,7 +57,7 @@ pub fn report_detect(
                     keypoints: vec![],
                 };
                 bboxes[class_index].push(bbox);
-                labels.push(NAMES[class_index].to_string());
+                labels.push(YOLO_CLASSES[class_index].to_string());
             }
         }
     }
@@ -71,13 +71,13 @@ pub fn report_detect(
     let mut img = img.to_rgba8(); // Convert to mutable RGBA image
 
     // Load font (replace with an actual font file path)
-    let font_data = include_bytes!(r"..\..\assets\arial.ttf");
+    let font_data = include_bytes!(r"../../assets/arial.ttf");
     let font = FontRef::try_from_slice(font_data).expect("Failed to load font");
 
     let scale = PxScale::from(20.0); // Fix: Convert to PxScale
 
     for (class_index, bboxes_for_class) in bboxes.iter_mut().enumerate() {
-        let label = NAMES[class_index].to_string();
+        let label = YOLO_CLASSES[class_index].to_string();
         let color = Rgba([255, 0, 0, 255]); // Red bounding box
         println!("Class {}: {}", class_index, label);
         println!("Bboxes: {:?}", bboxes_for_class);
@@ -113,26 +113,26 @@ pub fn report_detect(
 
 
 
-pub fn report_classified(pred: &Tensor, conf_threshold: f32) -> Result<String> {
-    let (_, npreds) = pred.dims2()?;
-    let conf_threshold = conf_threshold.clamp(0.0, 1.0);
+// pub fn report_classified(pred: &Tensor, conf_threshold: f32) -> Result<String> {
+//     let (_, npreds) = pred.dims2()?;
+//     let conf_threshold = conf_threshold.clamp(0.0, 1.0);
     
-    let mut detected_classes = Vec::new();
+//     let mut detected_classes = Vec::new();
     
-    for index in 0..npreds {
-        let pred = Vec::<f32>::try_from(pred.i((.., index))?)?;
-        let confidence = *pred[4..].iter().max_by(|x, y| x.total_cmp(y)).unwrap();
-        if confidence > conf_threshold {
-            let class_index = (4..pred.len()).max_by(|&i, &j| pred[i].total_cmp(&pred[j])).unwrap() - 4;
-            let class_name = NAMES[class_index].to_string();
-            if !detected_classes.contains(&class_name) {
-                detected_classes.push(class_name);
-            }
-        }
-    }
+//     for index in 0..npreds {
+//         let pred = Vec::<f32>::try_from(pred.i((.., index))?)?;
+//         let confidence = *pred[4..].iter().max_by(|x, y| x.total_cmp(y)).unwrap();
+//         if confidence > conf_threshold {
+//             let class_index = (4..pred.len()).max_by(|&i, &j| pred[i].total_cmp(&pred[j])).unwrap() - 4;
+//             let class_name = NAMES[class_index].to_string();
+//             if !detected_classes.contains(&class_name) {
+//                 detected_classes.push(class_name);
+//             }
+//         }
+//     }
     
-    Ok(detected_classes.join(", "))
-}
+//     Ok(detected_classes.join(", "))
+// }
 
 /* <--- ADD FUNCTIONS BASED ON YOUR NEEDS ENDS HERE ---> */
 

@@ -4,9 +4,9 @@ import { loadingimg } from './assets/images'
 import './App.css'
 
 function App() {
-  const [imgSrc, setImgSrc] = React.useState<string>("");
-  const [imgLabel, setImgLabel] = React.useState<string>("");
-  const [imgSize, setImgSize] = React.useState<string>("");
+  const [imgSrc, setImgSrc] = useState<string>("");
+  const [imgLabel, setImgLabel] = useState<string>("");
+  const [imgSize, setImgSize] = useState<string>("");
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
